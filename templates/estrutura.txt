@@ -1,0 +1,32 @@
+.
+├── cmd
+│   └── server
+│       └── main.go
+├── internal
+│   ├── application
+│   │   ├── service_one.go
+│   │   ├── service_two.go
+│   │   └── user_service.go
+│   ├── domain
+│   │   ├── entity_one.go
+│   │   ├── entity_two.go
+│   │   └── user.go
+│   ├── infrastructure
+│   │   ├── db
+│   │   │   ├── migration
+│   │   │   └── postgresql
+│   │   │       └── repository.go
+│   │   ├── email
+│   │   ├── http
+│   │   └── repository
+│   │       └── user_repository.go
+│   ├── middleware
+│   └── util
+├── pkg
+│   ├── config
+│   ├── logger
+│   └── server
+├── scripts
+├── test
+├── Dockerfile
+└── README.md
