@@ -54,6 +54,19 @@ func main() {
 	for _, product := range products {
 		fmt.Printf("Product: %v, possui o preço de: %.2f \n", product.Name, product.Price)
 	}
+	for _, product := range products {
+		err = deleteProduct(db, product.ID)
+		if err != nil {
+			panic(err)
+		}
+	}
+	products, err = selectAllProducts(db)
+	if err != nil {
+		panic(err)
+	}
+	if len(products) == 0 {
+		fmt.Println("Nenhum produto encontrado")
+	}
 }
 
 func insertProduct(db *sql.DB, product *Product) error {
@@ -117,4 +130,17 @@ func selectAllProducts(db *sql.DB) ([]*Product, error) {
 		products = append(products, &product)
 	}
 	return products, nil
+}
+
+func deleteProduct(db *sql.DB, id string) error {
+	stmt, err := db.Prepare("delete from products where id = ?")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
