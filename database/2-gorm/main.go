@@ -3,21 +3,29 @@ package main
 import (
 	"fmt"
 	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
-import "gorm.io/gorm"
 
 type Category struct {
-	ID   int `gorm:"primary_key"`
-	Name string
+	ID       int `gorm:"primary_key"`
+	Name     string
+	Products []Product
 }
 
 type Product struct {
-	ID         int `gorm:"primary_key"`
-	Name       string
-	Price      int
-	CategoryID int
-	Category   Category
+	ID           int `gorm:"primary_key"`
+	Name         string
+	Price        int
+	CategoryID   int
+	Category     Category
+	SerialNumber SerialNumber
 	gorm.Model
+}
+
+type SerialNumber struct {
+	ID        int `gorm:"primary_key"`
+	Number    string
+	ProductID int
 }
 
 func main() {
@@ -26,24 +34,40 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = db.AutoMigrate(&Product{}, &Category{})
+	err = db.AutoMigrate(&Product{}, &Category{}, &SerialNumber{})
 	if err != nil {
 		panic(err)
 	}
 
 	// create category
-	//category := Category{Name: "Eletronicos"}
-	//db.Create(&category)
+	category := Category{Name: "Alimentos"}
+	db.Create(&category)
 	//
 	//// create product
-	//product := Product{Name: "Mouse", Price: 100, CategoryID: category.ID}
-	//db.Create(&product)
+	product := Product{Name: "Rice", Price: 100, CategoryID: 1}
+	db.Create(&product)
+
+	// create serial number
+	serialNumber := SerialNumber{Number: "123456", ProductID: 1}
+	db.Create(&serialNumber)
 
 	// select product
-	var products []Product
-	db.Preload("Category").Find(&products)
-	for _, product := range products {
-		fmt.Println(product.Name, product.Category.Name)
+	//var products []Product
+	//db.Preload("Category").Preload("SerialNumber").Find(&products)
+	//for _, product := range products {
+	//	fmt.Println(product.Name, product.Category.Name, product.SerialNumber.Number)
+	//}
+
+	var categories []Category
+	err = db.Model(&Category{}).Preload("Products").Find(&categories).Error
+	if err != nil {
+		panic(err)
+	}
+	for _, category := range categories {
+		fmt.Println(category.Name, ":")
+		for _, product := range category.Products {
+			println("- ", product.Name, category.Name)
+		}
 	}
 
 	// create one
